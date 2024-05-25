@@ -1,6 +1,6 @@
 ---
  - name: installing promethius application 
-   hosts: ubuntu
+   hosts: target machine 
    become: true
    tasks: 
      - name: creating the promethius user
