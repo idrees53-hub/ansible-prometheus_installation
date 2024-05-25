@@ -1,0 +1,96 @@
+---
+ - name: installing promethius application 
+   hosts: ubuntu
+   become: true
+   tasks: 
+     - name: creating the promethius user
+       user:
+        name: prometheus 
+        system: true
+        create_home: false 
+        shell: /bin/false
+        state: present
+
+     - name: install the prometheus tar file on /root
+       command:
+          cmd: wget -P /root  https://github.com/prometheus/prometheus/releases/download/v2.47.1/prometheus-2.47.1.linux-amd64.tar.gz
+       ignore_errors: true
+
+
+     - name: extract the prometheus tar 
+       ansible.builtin.unarchive:
+        src: /root/prometheus-2.47.1.linux-amd64.tar.gz
+        dest: /root
+        remote_src: yes
+
+     - name: creating the prometheus directory 
+       file:
+        path: /etc/prometheus
+        owner: prometheus
+        group: prometheus
+        state: directory
+
+     - name: creating the prometheus directory
+       file:
+        path: /data
+        state: directory
+
+     - name: move prometheus to /usr/local/bin
+       command:
+        cmd: mv /root/prometheus-2.47.1.linux-amd64/prometheus  /usr/local/bin
+       ignore_errors: true    
+
+     - name: move promtool to /usr/local/bin 
+       command: 
+        cmd: mv /root/prometheus-2.47.1.linux-amd64/promtool /usr/local/bin 
+       ignore_errors: true 
+
+     - name: move consoles to /etc/prometheus
+       command:
+        cmd: mv /root/prometheus-2.47.1.linux-amd64/consoles /etc/prometheus
+       ignore_errors: true
+
+     - name: move console_libraries to /etc/prometheus
+       command:
+        cmd: mv /root/prometheus-2.47.1.linux-amd64/console_libraries /etc/prometheus
+       ignore_errors: true 
+
+     - name: move prometheus.yml to /etc/prometheus
+       command:
+        cmd: mv /root/prometheus-2.47.1.linux-amd64/prometheus.yml /etc/prometheus 
+       ignore_errors: yes
+
+     - name: changing ownership /etc/prometheus
+       file:
+        path: /etc/prometheus/
+        owner: prometheus
+        group: prometheus
+        state: directory
+          
+     - name: changing ownership /data
+       file:
+        path: /data
+        owner: prometheus
+        group: prometheus
+        state: directory
+  
+     - name: add the prometheus.service name file 
+       copy:
+        src:  prometheus.service
+        dest: /etc/systemd/system/prometheus.service
+
+     - name: starting the prometheus service
+       service:
+        name: prometheus
+        state: started 
+        enabled: yes 
+
+
+
+         
+
+
+
+
+          
+
