@@ -1,0 +1,50 @@
+---
+ - name: installing the node_exporter 
+   hosts: ubuntu
+   become: true
+   tasks: 
+     - name: creating the promethius user
+       user:
+        name: node_exporter 
+        system: true
+        create_home: false 
+        shell: /bin/false
+        state: present
+
+     - name: install the node_exporter tar file on /root
+       command:
+          cmd: wget -P /root https://github.com/prometheus/node_exporter/releases/download/v1.6.1/node_exporter-1.6.1.linux-amd64.tar.gz
+       ignore_errors: true
+
+     - name: extract the node_exporter tar 
+       ansible.builtin.unarchive:
+        src: /root/node_exporter-1.6.1.linux-amd64.tar.gz
+        dest: /root
+        remote_src: yes
+
+     - name: move node_exporter to /usr/local/bin
+       command:
+        cmd: mv /root/node_exporter-1.6.1.linux-amd64/node_exporter   /usr/local/bin
+       ignore_errors: true    
+
+  
+     - name: add the prometheus.service name file 
+       copy:
+        src:  node_exporter.service
+        dest: /etc/systemd/system/node_exporter.service
+
+     - name: starting the prometheus service
+       service:
+        name: node_exporter
+        state: started 
+        enabled: yes 
+
+
+
+         
+
+
+
+
+          
+
