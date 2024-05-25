@@ -3,7 +3,7 @@
    hosts: ubuntu
    become: true
    tasks: 
-     - name: creating the promethius user
+     - name: creating the node_exporter user
        user:
         name: node_exporter 
         system: true
@@ -28,12 +28,12 @@
        ignore_errors: true    
 
   
-     - name: add the prometheus.service name file 
+     - name: add the node_exporter.service name file 
        copy:
         src:  node_exporter.service
         dest: /etc/systemd/system/node_exporter.service
 
-     - name: starting the prometheus service
+     - name: starting the node_exporter service
        service:
         name: node_exporter
         state: started 
